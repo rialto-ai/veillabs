@@ -1,8 +1,17 @@
 name: Release Veil Scribe (Windows)
 
 # Builds the rebranded Veil Scribe desktop app (desktop/) into a Windows
-# installer and publishes it to this repo's Releases. Trigger by pushing a
-# tag like `veil-scribe-v0.4.0`, or run manually from the Actions tab.
+# installer here in the private repo, then publishes the installer to a
+# PUBLIC releases repo so anyone can download it while the source stays
+# private.
+#
+# Prerequisites (one-time):
+#   1. Create a public repo: rialto-ai/veil-scribe (can be empty / README only).
+#   2. Create a Personal Access Token with write access to that repo
+#      (classic: `repo` scope; or fine-grained: Contents: Read and write on
+#      rialto-ai/veil-scribe) and add it to THIS repo's secrets as RELEASE_PAT.
+#
+# Trigger by pushing a `veil-scribe-v*` tag, or run manually.
 on:
   workflow_dispatch:
   push:
@@ -10,7 +19,7 @@ on:
       - "veil-scribe-v*"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release-windows-${{ github.ref }}
@@ -19,6 +28,8 @@ concurrency:
 env:
   RUST_BACKTRACE: 1
   CARGO_TERM_COLOR: always
+  # The public repo that hosts downloadable releases.
+  RELEASES_REPO: rialto-ai/veil-scribe
 
 jobs:
   build-windows:
@@ -27,6 +38,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Read app version
+        id: ver
+        shell: bash
+        run: |
+          v=$(grep -o '"version": "[^"]*"' desktop/frontend/src-tauri/tauri.conf.json | head -1 | cut -d'"' -f4)
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "App version: $v"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -50,8 +69,7 @@ jobs:
         with:
           workspaces: desktop -> target
 
-      # whisper-rs uses bindgen, which needs libclang. windows-latest ships
-      # LLVM; point bindgen at it explicitly to be safe.
+      # whisper-rs uses bindgen, which needs libclang. windows-latest ships LLVM.
       - name: Locate libclang
         shell: bash
         run: echo "LIBCLANG_PATH=C:\\Program Files\\LLVM\\bin" >> "$GITHUB_ENV"
@@ -69,20 +87,27 @@ jobs:
           cp "target/x86_64-pc-windows-msvc/release/llama-helper.exe" \
              "frontend/src-tauri/binaries/llama-helper-x86_64-pc-windows-msvc.exe"
 
-      - name: Build and release Veil Scribe
+      # Build only — do NOT create a release in this (private) repo.
+      - name: Build Veil Scribe (Windows installer)
         uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: desktop/frontend
-          tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'veil-scribe-v__VERSION__' }}
-          releaseName: "Veil Scribe v__VERSION__"
-          releaseBody: |
+          args: --target x86_64-pc-windows-msvc
+
+      - name: Publish installer to public releases repo
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: ${{ env.RELEASES_REPO }}
+          token: ${{ secrets.RELEASE_PAT }}
+          tag_name: veil-scribe-v${{ steps.ver.outputs.version }}
+          name: Veil Scribe v${{ steps.ver.outputs.version }}
+          body: |
             Veil Scribe for Windows — local-first meeting intelligence by Veil Labs.
 
             This build is currently unsigned, so Windows SmartScreen may warn on
-            first launch (More info → Run anyway). Captured locally; nothing leaves
-            your device.
-          releaseDraft: false
-          prerelease: false
-          args: --target x86_64-pc-windows-msvc
+            first launch (More info → Run anyway). Captured locally; nothing
+            leaves your device.
+          files: |
+            desktop/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            desktop/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+          fail_on_unmatched_files: true
