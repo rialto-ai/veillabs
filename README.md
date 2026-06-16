@@ -1,11 +1,19 @@
-# Veil Scribe — by Veil Labs
+# Veil Labs — Veil Scribe
 
-The marketing website for **Veil Scribe**, a local-first AI meeting assistant
-by **Veil Labs**. Veil Scribe captures, transcribes, and summarizes meetings
-entirely on your own machine — no cloud, no accounts, no vendor lock-in.
+**Veil Scribe** is a local-first AI meeting assistant by **Veil Labs**. It
+captures, transcribes, and summarizes meetings entirely on your own machine —
+no cloud, no accounts, no vendor lock-in.
 
-This site is a Veil-branded take on the [Meetily](https://github.com/Zackriya-Solutions/meetily)
-product, rebuilt from the ground up against the Veil brand kit (v1, June 2026).
+This repository is a monorepo:
+
+| Path        | What it is                                                              |
+| ----------- | ----------------------------------------------------------------------- |
+| `/` (root)  | The marketing website (Next.js, static export, deployed to Vercel).     |
+| `desktop/`  | The Veil Scribe desktop app — a Veil-branded fork of Meetily (Tauri + Next.js + Rust). |
+
+Both the site and the app are built against the Veil brand kit (v1, June 2026).
+The marketing site is the Vercel-deployed product at the repo root; `desktop/`
+is a self-contained app with its own toolchain and is not part of the web build.
 
 ## Stack
 
@@ -28,7 +36,7 @@ The Veil system, applied throughout:
   with a `#F1EFFE` tint, never bare and never in circles.
 - **Voice.** Plain, precise, calm. No exclamation marks, no superlatives.
 
-## Structure
+## Marketing site (repo root)
 
 ```
 app/
@@ -41,8 +49,6 @@ components/         Logo, nav, footer, animated hero panel, icons, FAQ,
                     download flow, motion helpers
 ```
 
-## Develop
-
 ```bash
 npm install
 npm run dev      # http://localhost:3000
@@ -50,9 +56,24 @@ npm run build    # static export to ./out
 ```
 
 The build produces a fully static site in `out/`, hostable on any static host.
+Vercel builds from the repo root and ignores `desktop/`.
 
-## Download builds
+## Desktop app (`desktop/`)
 
-App binaries (macOS, Windows) and source builds (Linux) are published on the
-upstream [Meetily releases](https://github.com/Zackriya-Solutions/meetily/releases).
-The download page links there.
+A Veil-branded fork of [Meetily](https://github.com/Zackriya-Solutions/meetily):
+the same local-first Tauri + Next.js + Rust application, re-skinned to the Veil
+brand. The Veil pass covers the design tokens (Veil Violet primary, Ink/Mist
+neutrals, dark register), Inter + JetBrains Mono type, the `Veil.` wordmark, the
+app icon set, the Tauri product identity (`Veil Scribe`, `ai.veil.scribe`), and
+the user-facing copy. Functional identifiers (local database names, app-data
+paths, migration detectors) are intentionally left unchanged so existing data
+and update flows keep working.
+
+```bash
+cd desktop/frontend
+pnpm install
+pnpm dev            # Next.js dev server (port 3118)
+pnpm tauri:dev      # full desktop app (requires the Rust/Tauri toolchain)
+```
+
+See `desktop/README.md` and `desktop/CLAUDE.md` for the app architecture.
