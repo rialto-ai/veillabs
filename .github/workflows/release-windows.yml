@@ -28,6 +28,7 @@ jobs:
     runs-on: windows-latest
     outputs:
       version: ${{ steps.ver.outputs.version }}
+      signed: ${{ steps.signcfg.outputs.enabled }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -86,6 +87,33 @@ jobs:
           projectPath: desktop/frontend
           args: --target x86_64-pc-windows-msvc
 
+      # Code signing is optional: it stays dormant until the Azure Trusted
+      # Signing secrets are present, so builds keep working before it's set up.
+      - name: Check signing config
+        id: signcfg
+        shell: bash
+        run: |
+          if [ -n "${{ secrets.AZURE_CLIENT_ID }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Azure Trusted Signing not configured — shipping unsigned."
+          fi
+
+      - name: Sign installers (Azure Trusted Signing)
+        if: steps.signcfg.outputs.enabled == 'true'
+        uses: azure/trusted-signing-action@v0
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ vars.AZURE_TS_ENDPOINT }}
+          trusted-signing-account-name: ${{ vars.AZURE_TS_ACCOUNT }}
+          certificate-profile-name: ${{ vars.AZURE_TS_PROFILE }}
+          files-folder: desktop/target/x86_64-pc-windows-msvc/release/bundle
+          files-folder-filter: msi,exe
+          files-folder-recurse: true
+
       - name: Upload installer artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -115,8 +143,8 @@ jobs:
           body: |
             Veil Scribe for Windows — local-first meeting intelligence by Veil Labs.
 
-            This build is currently unsigned, so Windows SmartScreen may warn on
-            first launch (More info → Run anyway). Captured locally; nothing
-            leaves your device.
+            ${{ needs.build-windows.outputs.signed == 'true' && 'Signed with Azure Trusted Signing.' || 'This build is unsigned, so Windows SmartScreen may warn on first launch (More info → Run anyway).' }}
+
+            Captured locally; nothing leaves your device.
           files: dist/**/*
           fail_on_unmatched_files: true
