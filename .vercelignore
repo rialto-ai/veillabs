@@ -1,0 +1,4 @@
+# Vercel only builds the marketing site at the repo root.
+# The desktop app (Tauri + Rust + its own Next frontend) is not part of the
+# web build and must be excluded from the deployment context.
+desktop/
