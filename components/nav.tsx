@@ -49,7 +49,7 @@ export function Nav() {
 
         <div className="hidden items-center gap-3 md:flex">
           <a
-            href="https://github.com/Zackriya-Solutions/meetily"
+            href="https://github.com/rialto-ai/veillabs"
             target="_blank"
             rel="noreferrer"
             className="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-mist hover:text-ink"

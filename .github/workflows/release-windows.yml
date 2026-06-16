@@ -1,0 +1,88 @@
+name: Release Veil Scribe (Windows)
+
+# Builds the rebranded Veil Scribe desktop app (desktop/) into a Windows
+# installer and publishes it to this repo's Releases. Trigger by pushing a
+# tag like `veil-scribe-v0.4.0`, or run manually from the Actions tab.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "veil-scribe-v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-windows-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  RUST_BACKTRACE: 1
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-windows:
+    name: Build Windows (x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: desktop/frontend/pnpm-lock.yaml
+
+      - name: Install Rust (msvc)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: desktop -> target
+
+      # whisper-rs uses bindgen, which needs libclang. windows-latest ships
+      # LLVM; point bindgen at it explicitly to be safe.
+      - name: Locate libclang
+        shell: bash
+        run: echo "LIBCLANG_PATH=C:\\Program Files\\LLVM\\bin" >> "$GITHUB_ENV"
+
+      - name: Install frontend dependencies
+        working-directory: desktop/frontend
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build llama-helper sidecar
+        working-directory: desktop
+        shell: bash
+        run: |
+          cargo build --release -p llama-helper --target x86_64-pc-windows-msvc
+          mkdir -p frontend/src-tauri/binaries
+          cp "target/x86_64-pc-windows-msvc/release/llama-helper.exe" \
+             "frontend/src-tauri/binaries/llama-helper-x86_64-pc-windows-msvc.exe"
+
+      - name: Build and release Veil Scribe
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: desktop/frontend
+          tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'veil-scribe-v__VERSION__' }}
+          releaseName: "Veil Scribe v__VERSION__"
+          releaseBody: |
+            Veil Scribe for Windows — local-first meeting intelligence by Veil Labs.
+
+            This build is currently unsigned, so Windows SmartScreen may warn on
+            first launch (More info → Run anyway). Captured locally; nothing leaves
+            your device.
+          releaseDraft: false
+          prerelease: false
+          args: --target x86_64-pc-windows-msvc

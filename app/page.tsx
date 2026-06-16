@@ -153,7 +153,7 @@ export default function Home() {
                   <IconArrow width={16} height={16} />
                 </Link>
                 <a
-                  href="https://github.com/Zackriya-Solutions/meetily"
+                  href="https://github.com/rialto-ai/veillabs"
                   target="_blank"
                   rel="noreferrer"
                   className="btn-ghost"
@@ -470,7 +470,7 @@ export default function Home() {
                   <IconArrow width={16} height={16} />
                 </Link>
                 <a
-                  href="https://github.com/Zackriya-Solutions/meetily"
+                  href="https://github.com/rialto-ai/veillabs"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-ondark/15 px-7 py-3.5 text-sm font-semibold text-ondark transition-colors hover:bg-white/5"

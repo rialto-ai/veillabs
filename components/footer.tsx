@@ -17,11 +17,11 @@ const cols = [
       { href: "/#privacy", label: "Privacy model" },
       { href: "/#faq", label: "FAQ" },
       {
-        href: "https://github.com/Zackriya-Solutions/meetily",
+        href: "https://github.com/rialto-ai/veillabs",
         label: "Source code",
       },
       {
-        href: "https://github.com/Zackriya-Solutions/meetily/releases",
+        href: "https://github.com/rialto-ai/veillabs/releases",
         label: "Releases",
       },
     ],
@@ -49,7 +49,7 @@ export function Footer() {
               remembers what matters and answers only to you.
             </p>
             <a
-              href="https://github.com/Zackriya-Solutions/meetily"
+              href="https://github.com/rialto-ai/veillabs"
               target="_blank"
               rel="noreferrer"
               className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-ink"
