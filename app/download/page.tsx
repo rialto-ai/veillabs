@@ -135,7 +135,7 @@ export default function Download() {
               </p>
             </div>
             <a
-              href="https://github.com/rialto-ai/veillabs"
+              href="https://github.com/rialto-ai/veil-scribe"
               target="_blank"
               rel="noreferrer"
               className="btn-primary shrink-0"

@@ -12,7 +12,7 @@ import {
 
 type OS = "mac" | "windows" | "linux";
 
-const RELEASES = "https://github.com/rialto-ai/veillabs/releases/latest";
+const RELEASES = "https://github.com/rialto-ai/veil-scribe/releases/latest";
 
 const platforms: Record<
   OS,
