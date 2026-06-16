@@ -1,15 +1,8 @@
 name: Release Veil Scribe (Windows)
 
 # Builds the rebranded Veil Scribe desktop app (desktop/) into a Windows
-# installer here in the private repo, then publishes the installer to a
-# PUBLIC releases repo so anyone can download it while the source stays
-# private.
-#
-# Prerequisites (one-time):
-#   1. Create a public repo: rialto-ai/veil-scribe (can be empty / README only).
-#   2. Create a Personal Access Token with write access to that repo
-#      (classic: `repo` scope; or fine-grained: Contents: Read and write on
-#      rialto-ai/veil-scribe) and add it to THIS repo's secrets as RELEASE_PAT.
+# installer and publishes it to this repo's Releases. Split into two jobs so
+# a publish failure can be retried (Re-run failed jobs) without a full rebuild.
 #
 # Trigger by pushing a `veil-scribe-v*` tag, or run manually.
 on:
@@ -19,7 +12,7 @@ on:
       - "veil-scribe-v*"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: release-windows-${{ github.ref }}
@@ -28,13 +21,13 @@ concurrency:
 env:
   RUST_BACKTRACE: 1
   CARGO_TERM_COLOR: always
-  # The public repo that hosts downloadable releases.
-  RELEASES_REPO: rialto-ai/veil-scribe
 
 jobs:
   build-windows:
     name: Build Windows (x64)
     runs-on: windows-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -87,27 +80,43 @@ jobs:
           cp "target/x86_64-pc-windows-msvc/release/llama-helper.exe" \
              "frontend/src-tauri/binaries/llama-helper-x86_64-pc-windows-msvc.exe"
 
-      # Build only — do NOT create a release in this (private) repo.
       - name: Build Veil Scribe (Windows installer)
         uses: tauri-apps/tauri-action@v0
         with:
           projectPath: desktop/frontend
           args: --target x86_64-pc-windows-msvc
 
-      - name: Publish installer to public releases repo
+      - name: Upload installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: veil-scribe-windows
+          if-no-files-found: error
+          path: |
+            desktop/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            desktop/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+
+  publish:
+    name: Publish release
+    needs: build-windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download installer artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: veil-scribe-windows
+          path: dist
+
+      - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          repository: ${{ env.RELEASES_REPO }}
           token: ${{ secrets.RELEASE_PAT }}
-          tag_name: veil-scribe-v${{ steps.ver.outputs.version }}
-          name: Veil Scribe v${{ steps.ver.outputs.version }}
+          tag_name: veil-scribe-v${{ needs.build-windows.outputs.version }}
+          name: Veil Scribe v${{ needs.build-windows.outputs.version }}
           body: |
             Veil Scribe for Windows — local-first meeting intelligence by Veil Labs.
 
             This build is currently unsigned, so Windows SmartScreen may warn on
             first launch (More info → Run anyway). Captured locally; nothing
             leaves your device.
-          files: |
-            desktop/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
-            desktop/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+          files: dist/**/*
           fail_on_unmatched_files: true
