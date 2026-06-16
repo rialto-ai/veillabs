@@ -175,6 +175,21 @@ export function DownloadFlow() {
             ))}
           </div>
 
+          {active === "windows" ? (
+            <div className="mt-4 rounded-xl border border-amber-signal/20 bg-amber-signal/[0.06] px-4 py-3">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-signal">
+                Unsigned for now
+              </p>
+              <p className="mt-1 text-[13px] leading-snug text-ink">
+                If your browser pauses the download, choose{" "}
+                <span className="font-semibold">Keep</span>. On first launch,
+                select <span className="font-semibold">More info</span> →{" "}
+                <span className="font-semibold">Run anyway</span>. Code signing
+                is on the way.
+              </p>
+            </div>
+          ) : null}
+
           <p className="mt-5 font-mono text-[11px] leading-relaxed text-muted">
             Builds are published on GitHub Releases. Veil Scribe is open
             source — verify the binary or build it yourself.
