@@ -62,11 +62,31 @@ const config: Config = {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
         },
+        "aurora-a": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(6%, 4%) scale(1.12)" },
+        },
+        "aurora-b": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1.05)" },
+          "50%": { transform: "translate(-7%, -5%) scale(0.95)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
+        "bob-down": {
+          "0%, 100%": { transform: "translateY(0)", opacity: "0.5" },
+          "50%": { transform: "translateY(4px)", opacity: "1" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s cubic-bezier(0.22,1,0.36,1) both",
         "pulse-dot": "pulse-dot 1.8s ease-in-out infinite",
         marquee: "marquee 32s linear infinite",
+        "aurora-a": "aurora-a 14s ease-in-out infinite",
+        "aurora-b": "aurora-b 18s ease-in-out infinite",
+        float: "float 6s ease-in-out infinite",
+        "bob-down": "bob-down 1.8s ease-in-out infinite",
       },
     },
   },

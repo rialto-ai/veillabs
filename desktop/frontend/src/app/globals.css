@@ -217,3 +217,95 @@
     overflow: visible !important;
   }
 }
+
+/* ── Veil polish ─────────────────────────────────────────────────────────
+   Brand-consistent finishing touches applied app-wide: the violet accent,
+   calm motion, and a tidy surface. Kept additive and low-risk. */
+@layer base {
+  /* Text selection uses the Veil violet. */
+  ::selection {
+    background: hsl(249 84% 64% / 0.22);
+    color: inherit;
+  }
+
+  /* Accessible focus ring in the brand accent, not the browser default. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Default (non-custom) scrollbars get a restrained, violet-tinted thumb. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(220 14% 80%) transparent;
+  }
+  .dark * {
+    scrollbar-color: hsl(222 18% 30%) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(220 14% 82%);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(249 84% 64% / 0.55);
+    background-clip: padding-box;
+  }
+
+  /* The custom-scrollbar utility, refined to match. */
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(220 14% 80%);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(249 84% 64% / 0.6);
+  }
+}
+
+@layer components {
+  /* Calm, consistent transitions for interactive controls. */
+  button,
+  a,
+  [role="button"],
+  input,
+  textarea,
+  select {
+    transition:
+      color 0.18s ease,
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.18s ease,
+      opacity 0.18s ease;
+  }
+
+  /* Soft card lift used for clickable list/grid items (opt-in). */
+  .veil-lift {
+    transition:
+      transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .veil-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px -20px hsl(249 84% 40% / 0.45);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    .veil-lift,
+    .animate-fade-in,
+    .animate-fade-in-up {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}

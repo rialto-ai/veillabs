@@ -13,13 +13,18 @@ import {
 type OS = "mac" | "windows" | "linux";
 
 const RELEASES = "https://github.com/rialto-ai/veillabs/releases/latest";
+// Direct installer download (skips the GitHub release page for a smoother flow).
+const WINDOWS_SETUP =
+  "https://github.com/rialto-ai/veillabs/releases/download/veil-scribe-v0.4.0/Veil.Scribe_0.4.0_x64-setup.exe";
+
+type Build = { label: string; meta: string; href: string; direct?: boolean };
 
 const platforms: Record<
   OS,
   {
     name: string;
     icon: typeof IconApple;
-    builds: { label: string; meta: string }[];
+    builds: Build[];
     steps: string[];
   }
 > = {
@@ -27,8 +32,8 @@ const platforms: Record<
     name: "macOS",
     icon: IconApple,
     builds: [
-      { label: "Apple Silicon", meta: ".dmg · arm64" },
-      { label: "Intel", meta: ".dmg · x64" },
+      { label: "Apple Silicon", meta: ".dmg · arm64", href: RELEASES },
+      { label: "Intel", meta: ".dmg · x64", href: RELEASES },
     ],
     steps: [
       "Open the downloaded .dmg file.",
@@ -40,7 +45,14 @@ const platforms: Record<
   windows: {
     name: "Windows",
     icon: IconWindows,
-    builds: [{ label: "Windows 10 / 11", meta: ".exe · x64 installer" }],
+    builds: [
+      {
+        label: "Windows 10 / 11",
+        meta: ".exe · x64 installer",
+        href: WINDOWS_SETUP,
+        direct: true,
+      },
+    ],
     steps: [
       "Run the downloaded x64 installer.",
       "Follow the prompts to complete installation.",
@@ -51,7 +63,9 @@ const platforms: Record<
   linux: {
     name: "Linux",
     icon: IconLinux,
-    builds: [{ label: "Build from source", meta: "scripts · all distros" }],
+    builds: [
+      { label: "Build from source", meta: "scripts · all distros", href: RELEASES },
+    ],
     steps: [
       "Clone the repository from GitHub.",
       "Run the provided build script for your distribution.",
@@ -140,9 +154,10 @@ export function DownloadFlow() {
             {p.builds.map((b) => (
               <a
                 key={b.label}
-                href={RELEASES}
-                target="_blank"
-                rel="noreferrer"
+                href={b.href}
+                {...(b.direct
+                  ? { download: "" }
+                  : { target: "_blank", rel: "noreferrer" })}
                 className="group flex items-center justify-between rounded-xl border border-ink/8 bg-mist/50 px-4 py-3.5 transition-colors hover:border-violet/40 hover:bg-violet-tint/50"
               >
                 <span>

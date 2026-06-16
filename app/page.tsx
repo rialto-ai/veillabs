@@ -113,18 +113,20 @@ export default function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
         <div className="grid-lines pointer-events-none absolute inset-0 -z-10 opacity-60" />
+        {/* Drifting violet aurora — calm, slow, never loud. */}
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px]"
-          style={{
-            background:
-              "radial-gradient(50% 60% at 50% 0%, rgba(110,86,240,0.10), transparent 70%)",
-          }}
+          aria-hidden
+          className="animate-aurora-a pointer-events-none absolute -top-32 left-[12%] -z-10 h-[460px] w-[460px] rounded-full bg-violet/15 blur-[110px] motion-reduce:animate-none"
+        />
+        <div
+          aria-hidden
+          className="animate-aurora-b pointer-events-none absolute -top-24 right-[8%] -z-10 h-[400px] w-[400px] rounded-full bg-violet-tint blur-[100px] motion-reduce:animate-none"
         />
         <div className="container-page grid items-center gap-14 lg:grid-cols-[1fr_1.05fr]">
           <div>
             <Reveal>
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-ink/8 bg-white px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-violet" />
+                <span className="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-violet motion-reduce:animate-none" />
                 <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
                   Veil Scribe · by Veil Labs
                 </span>
@@ -211,8 +213,8 @@ export default function Home() {
           <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-ink/8 bg-ink/8 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f, i) => (
               <Reveal key={f.title} delay={(i % 4) * 0.05} className="h-full">
-                <div className="flex h-full flex-col bg-paper p-7 transition-colors hover:bg-mist/50">
-                  <span className="icon-tile mb-5 h-11 w-11">
+                <div className="group flex h-full flex-col bg-paper p-7 transition-colors hover:bg-mist/50">
+                  <span className="icon-tile mb-5 h-11 w-11 transition-all duration-300 group-hover:scale-105 group-hover:bg-violet group-hover:text-white">
                     <f.icon width={20} height={20} />
                   </span>
                   <h3 className="text-base font-semibold text-ink">
@@ -241,7 +243,7 @@ export default function Home() {
           <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
               <Reveal key={s.n} delay={i * 0.06}>
-                <div className="group relative h-full rounded-2xl border border-ink/8 bg-paper p-6">
+                <div className="group relative h-full rounded-2xl border border-ink/8 bg-paper p-6 transition-all duration-300 hover:-translate-y-1 hover:border-violet/30 hover:shadow-[0_18px_40px_-24px_rgba(110,86,240,0.5)]">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-sm font-bold text-violet">
                       {s.n}
@@ -363,14 +365,14 @@ export default function Home() {
           </Reveal>
         </div>
 
-        <div className="relative mt-14">
+        <div className="group relative mt-14">
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-paper to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-paper to-transparent" />
-          <div className="flex w-max animate-marquee gap-4">
+          <div className="flex w-max animate-marquee gap-4 group-hover:[animation-play-state:paused] motion-reduce:animate-none">
             {[...providers, ...providers].map((p, i) => (
               <div
                 key={i}
-                className="flex shrink-0 items-center gap-3 rounded-full border border-ink/8 bg-mist px-6 py-3"
+                className="flex shrink-0 items-center gap-3 rounded-full border border-ink/8 bg-mist px-6 py-3 transition-colors hover:border-violet/40 hover:bg-violet-tint/40"
               >
                 <span className="h-2 w-2 rounded-full bg-violet" />
                 <span className="whitespace-nowrap text-sm font-medium text-ink">
@@ -444,7 +446,7 @@ export default function Home() {
         <Reveal>
           <div className="relative overflow-hidden rounded-3xl bg-ink-deep px-8 py-16 text-center sm:px-16 sm:py-20">
             <div
-              className="pointer-events-none absolute inset-0"
+              className="animate-aurora-a pointer-events-none absolute inset-0 motion-reduce:animate-none"
               style={{
                 background:
                   "radial-gradient(50% 80% at 50% 0%, rgba(110,86,240,0.30), transparent 70%)",
@@ -452,7 +454,7 @@ export default function Home() {
             />
             <div className="relative">
               <span className="wordmark text-3xl text-ondark">
-                Veil<span className="text-violet-ondark">.</span>
+                Veil<span className="animate-pulse-dot inline-block text-violet-ondark motion-reduce:animate-none">.</span>
               </span>
               <h2 className="mx-auto mt-6 max-w-xl text-3xl font-bold tracking-h2 text-ondark sm:text-4xl">
                 Keep your meetings. Keep your data.
