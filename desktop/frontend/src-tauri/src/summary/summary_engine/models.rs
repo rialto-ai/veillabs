@@ -324,8 +324,10 @@ pub const DEFAULT_MAX_TOKENS: i32 = 4096;
 /// Idle timeout for sidecar (seconds) - can be overridden via LLAMA_IDLE_TIMEOUT env var
 pub const DEFAULT_IDLE_TIMEOUT_SECS: u64 = 300; // 5 minutes
 
-/// Generation timeout (how long to wait for a response)
-pub const GENERATION_TIMEOUT_SECS: u64 = 900; // 15 minutes
+/// Generation timeout (how long to wait for a response per request).
+/// Kept tight so an unresponsive/too-slow local model surfaces a clear error
+/// quickly instead of leaving the UI spinning for many minutes.
+pub const GENERATION_TIMEOUT_SECS: u64 = 300; // 5 minutes
 
 #[cfg(test)]
 mod tests {
