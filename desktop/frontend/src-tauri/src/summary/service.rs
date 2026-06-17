@@ -504,7 +504,15 @@ impl SummaryService {
             }),
         };
 
-        let client = reqwest::Client::new();
+        // Bounded client so an unresponsive Ollama/cloud endpoint fails with a
+        // clear error rather than hanging the summary indefinitely.
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(
+                crate::summary::summary_engine::models::GENERATION_TIMEOUT_SECS,
+            ))
+            .connect_timeout(std::time::Duration::from_secs(15))
+            .build()
+            .unwrap_or_else(|_| reqwest::Client::new());
         let result = generate_meeting_summary(
             &client,
             &provider,
