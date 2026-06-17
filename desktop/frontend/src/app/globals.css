@@ -146,6 +146,9 @@
   /* html, */
   body {
     @apply bg-background text-foreground;
+    /* Veil type system — Inter does the talking. Set explicitly so the app
+       never falls back to a system font if a utility class is missing. */
+    font-family: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
     overflow: hidden;
     height: 100%;
   }
