@@ -1,7 +1,8 @@
 {
     "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
     "productName": "Veil Scribe",
-    "version": "0.4.0",
+    "mainBinaryName": "Veil Scribe",
+    "version": "0.4.1",
     "identifier": "ai.veil.scribe",
     "build": {
         "frontendDist": "../out",
@@ -110,9 +111,9 @@
     },
     "plugins": {
         "updater": {
-            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVDQTYzMUQ3ODc5N0M4MkEKUldRcXlKZUgxekdtN09DRkVWSHNpZlJseEVOUmpNd1dDSTNaLzZ3MXJGTnY3WW1pdnlOYjBpbkIK",
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE0MzQ2QkM0Qjk0MEM3Q0MKUldUTXgwQzV4R3MwRkJCYmNqemVVR3QzV25zOGNHdFhEUStyMW92bjV2OFo1c3ZLbllTQ2dQQlIK",
             "endpoints": [
-                "https://github.com/Zackriya-Solutions/meeting-minutes/releases/latest/download/latest.json"
+                "https://github.com/rialto-ai/veillabs/releases/latest/download/latest.json"
             ]
         }
     }

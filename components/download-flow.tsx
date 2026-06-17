@@ -14,8 +14,10 @@ type OS = "mac" | "windows" | "linux";
 
 const RELEASES = "https://github.com/rialto-ai/veillabs/releases/latest";
 // Direct installer download (skips the GitHub release page for a smoother flow).
+// Stable, version-less URL: the release workflow publishes this filename on
+// every release, so this never needs updating.
 const WINDOWS_SETUP =
-  "https://github.com/rialto-ai/veillabs/releases/download/veil-scribe-v0.4.0/Veil.Scribe_0.4.0_x64-setup.exe";
+  "https://github.com/rialto-ai/veillabs/releases/latest/download/Veil-Scribe-Setup-x64.exe";
 
 type Build = { label: string; meta: string; href: string; direct?: boolean };
 

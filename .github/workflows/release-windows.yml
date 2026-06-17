@@ -134,6 +134,20 @@ jobs:
           name: veil-scribe-windows
           path: dist
 
+      # Publish a stable, version-less copy of the installer so the website can
+      # link to /releases/latest/download/Veil-Scribe-Setup-x64.exe forever
+      # (no per-release edits). The versioned originals are kept too.
+      - name: Add stable-named installer
+        shell: bash
+        run: |
+          setup=$(find dist -name "*-setup.exe" | head -1)
+          if [ -n "$setup" ]; then
+            cp "$setup" "dist/Veil-Scribe-Setup-x64.exe"
+            echo "Stable copy: $(ls -lh dist/Veil-Scribe-Setup-x64.exe)"
+          else
+            echo "No NSIS -setup.exe found"; exit 1
+          fi
+
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
